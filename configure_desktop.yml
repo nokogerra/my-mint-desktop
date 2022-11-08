@@ -1,0 +1,94 @@
+- name: "configure desktop"
+  hosts: localhost
+  vars:
+    main_packages:
+    - ssh
+    - xrdp
+    - tmux
+    - vlc
+    - pinta
+    - apt-transport-https
+    - ca-certificates
+    - debian-archive-keyring
+    - software-properties-common
+    - gnupg
+    - gnupg2
+    - wireguard
+    - keepass2
+    - openconnect
+    - flameshot
+    - skypeforlinux
+    - telegram-desktop
+    adds_packages:
+    - google-chrome-stable
+    - yandex-disk
+    - code
+    - powershell
+    configs:
+    - tmux_conf:
+      src: "templates/tmux.j2"
+      dest: ~/.tmux.conf
+    - vim_conf:
+      src: "templates/vimrc.j2"
+      dest: ~/.vimrc
+    net_ports:
+    - rdp:
+      proto: "tcp"
+      port: "3389"
+    - ssh:
+      proto: "tcp"
+      port: "22"      
+    repos:
+    - chrome_repo: 
+      repo: "deb [arch=amd64,signed-by=/usr/share/keyrings/google-chrome.gpg] http://dl.google.com/linux/chrome/deb/ stable main"
+      key: "https://dl.google.com/linux/linux_signing_key.pub"
+      dest_key: "/usr/share/keyrings/google-chrome.gpg"
+    - ydisk_repo:
+      repo: "deb [signed-by=/usr/share/keyrings/yadisk.gpg] http://repo.yandex.ru/yandex-disk/deb/ stable main"
+      key: "http://repo.yandex.ru/yandex-disk/YANDEX-DISK-KEY.GPG"
+      dest_key: "/usr/share/keyrings/yadisk.gpg"
+    - vscode_repo:
+      repo: "deb [arch=amd64,arm64,armhf signed-by=/usr/share/keyrings/vscode.gpg] https://packages.microsoft.com/repos/code stable main"
+      key: "https://packages.microsoft.com/keys/microsoft.asc"
+      dest_key: "/usr/share/keyrings/vscode.gpg"    
+    - powershell_repo:
+      repo: "deb [arch=amd64,armhf,arm64 signed-by=/usr/share/keyrings/powershell.gpg] https://packages.microsoft.com/ubuntu/22.04/prod/ jammy main"
+      key: "https://packages.microsoft.com/keys/microsoft.asc"
+      dest_key: "/usr/share/keyrings/powershell.gpg"    
+  tasks:
+  - name: "install main packages"
+    apt:
+      name: "{{ item }}"
+      update_cache: yes
+      state: present
+    loop: "{{ main_packages }}"
+  - name: "configure repos keys"
+    apt_key:
+      url: "{{ item.key }}"
+      state: present
+      keyring: "{{ item.dest_key }}"
+    loop: "{{ repos }}"
+  - name: "configure repos"
+    apt_repository:
+      repo: "{{ item.repo }}"
+      state: present
+      update_cache: yes
+    loop: "{{ repos }}"
+  - name: "install additional packages"
+    apt:
+      name: "{{ item }}"
+      update_cache: yes
+      state: present
+    loop: "{{ adds_packages }}"
+  - name: "set up configs"
+    become: no
+    template:
+      src: "{{ item.src }}"
+      dest: "{{ item.dest }}"
+    loop: "{{ configs }}"
+  - name: "network access"
+    community.general.ufw:
+      rule: allow
+      port: "{{ item.port }}"
+      proto: "{{ item.proto }}"
+    loop: "{{ net_ports }}"
