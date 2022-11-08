@@ -64,6 +64,7 @@
     loop: "{{ main_packages }}"
   - name: "configure repos keys"
     shell: "curl -fsSL {{ item.key }} | sudo gpg --dearmor -o {{ item.dest_key }}"
+    loop: "{{ repos }}"
 #  - name: "configure repos keys"
 #    apt_key:
 #      url: "{{ item.key }}"
