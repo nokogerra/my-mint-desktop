@@ -63,13 +63,13 @@
       state: present
     loop: "{{ main_packages }}"
   - name: "configure repos keys"
-    get_url:
+    shell: "curl -fsSL {{ item.key }} | sudo gpg --dearmor -o {{ item.dest_key }}"
+#  - name: "configure repos keys"
 #    apt_key:
-      url: "{{ item.key }}"
+#      url: "{{ item.key }}"
 #      state: present
 #      keyring: "{{ item.dest_key }}"
-      dest: "{{ item.dest_key }}"
-    loop: "{{ repos }}"
+#    loop: "{{ repos }}"
   - name: "configure repos"
     apt_repository:
       repo: "{{ item.repo }}"
