@@ -63,10 +63,12 @@
       state: present
     loop: "{{ main_packages }}"
   - name: "configure repos keys"
-    apt_key:
+    get_url:
+#    apt_key:
       url: "{{ item.key }}"
-      state: present
-      keyring: "{{ item.dest_key }}"
+#      state: present
+#      keyring: "{{ item.dest_key }}"
+      dest: "{{ item.dest_key }}"
     loop: "{{ repos }}"
   - name: "configure repos"
     apt_repository:
