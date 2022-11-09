@@ -94,7 +94,7 @@
       repo: "{{ item.repo }}"
       state: present
       update_cache: yes
-      file: "{{ item.repo_file }}"
+      filename: "{{ item.repo_file }}"
     loop: "{{ repos }}"
 #  - name: "install additional packages"
 #    apt:
