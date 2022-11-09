@@ -72,7 +72,7 @@
       dest: "{{ item.file }}"
     loop: "{{ repos }}"
   - name: De-Armor Docker GPG key
-    command:  "gpg --dearmor < {{ item.file }} > {{ item.dest_key }}"
+    shell: sudo bash -c "gpg --dearmor < {{ item.file }} > {{ item.dest_key }}"
     changed_when: false
     no_log: true
     loop: "{{ repos }}"
@@ -91,12 +91,12 @@
       state: present
       update_cache: yes
     loop: "{{ repos }}"
-  - name: "install additional packages"
-    apt:
-      name: "{{ item }}"
-      update_cache: yes
-      state: present
-    loop: "{{ adds_packages }}"
+#  - name: "install additional packages"
+#    apt:
+#      name: "{{ item }}"
+#      update_cache: yes
+#      state: present
+#    loop: "{{ adds_packages }}"
   - name: "set up configs"
     become: no
     template:
