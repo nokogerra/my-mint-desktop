@@ -40,7 +40,7 @@
       port: "22"      
     repos:
     - chrome_repo: 
-      repo: "deb [arch=amd64,signed-by=/usr/share/keyrings/google-chrome.gpg] http://dl.google.com/linux/chrome/deb/ stable main"
+      repo: "deb [arch=amd64 signed-by=/usr/share/keyrings/google-chrome.gpg] http://dl.google.com/linux/chrome/deb/ stable main"
       key: "https://dl.google.com/linux/linux_signing_key.pub"
       dest_key: "/usr/share/keyrings/google-chrome.gpg"
     - ydisk_repo:
