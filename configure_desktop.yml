@@ -19,6 +19,7 @@
     - flameshot
     - skypeforlinux
     - telegram-desktop
+    - open-vm-tools-desktop
     adds_packages:
     - google-chrome-stable
     - yandex-disk
@@ -43,25 +44,25 @@
       repo: "deb [arch=amd64 signed-by=/usr/share/keyrings/google-chrome.gpg] http://dl.google.com/linux/chrome/deb/ stable main"
       key: "https://dl.google.com/linux/linux_signing_key.pub"
       file: "/tmp/linux_signing_key.pub"
-      dest_key: "/usr/share/keyrings/google-chrome.gpg"
+      dest_key: "google-chrome.gpg"
       repo_file: "google-chrome"
     - ydisk_repo:
       repo: "deb [signed-by=/usr/share/keyrings/yadisk.gpg] http://repo.yandex.ru/yandex-disk/deb/ stable main"
       key: "http://repo.yandex.ru/yandex-disk/YANDEX-DISK-KEY.GPG"
       file: "/tmp/YANDEX-DISK-KEY.GPG"
-      dest_key: "/usr/share/keyrings/yadisk.gpg"
+      dest_key: "yadisk.gpg"
       repo_file: "yadisk"
     - vscode_repo:
       repo: "deb [arch=amd64,arm64,armhf signed-by=/usr/share/keyrings/vscode.gpg] https://packages.microsoft.com/repos/code stable main"
       key: "https://packages.microsoft.com/keys/microsoft.asc"
       file: "/tmp/microsoft1.asc"
-      dest_key: "/usr/share/keyrings/vscode.gpg"
+      dest_key: "vscode.gpg"
       repo_file: "vscode"   
     - powershell_repo:
       repo: "deb [arch=amd64,armhf,arm64 signed-by=/usr/share/keyrings/powershell.gpg] https://packages.microsoft.com/ubuntu/22.04/prod/ jammy main"
       key: "https://packages.microsoft.com/keys/microsoft.asc"
       file: "/tmp/microsoft2.asc"
-      dest_key: "/usr/share/keyrings/powershell.gpg"
+      dest_key: "powershell.gpg"
       repo_file: "powershell"    
   tasks:
   - name: "install main packages"
@@ -70,25 +71,19 @@
       update_cache: yes
       state: present
     loop: "{{ main_packages }}"
-  - name: Download Docker gpg key
-    get_url:
-      url: "{{ item.key }}"
-      dest: "{{ item.file }}"
-    loop: "{{ repos }}"
-  - name: De-Armor Docker GPG key
-    shell: sudo bash -c "gpg --dearmor < {{ item.file }} > {{ item.dest_key }}"
-    changed_when: false
-    no_log: true
-    loop: "{{ repos }}"
-#  - name: "configure repos keys"
-#    shell: "curl -fsSL {{ item.key }} | sudo gpg --dearmor -o {{ item.dest_key }}"
-#    loop: "{{ repos }}"
-#  - name: "configure repos keys"
-#    apt_key:
+#  - name: "download pgp keys"
+#    get_url:
 #      url: "{{ item.key }}"
-#      state: present
-#      keyring: "{{ item.dest_key }}"
+#      dest: "{{ item.file }}"
 #    loop: "{{ repos }}"
+#  - name: "dearmor pgp keys and put them into keyrings"
+#    shell: sudo bash -c "gpg --dearmor < {{ item.file }} > /usr/share/keyrings/{{ item.dest_key }}"
+#    changed_when: false
+#    no_log: true
+#    loop: "{{ repos }}"
+  - name: "configure gpg keys"
+    shell: "curl -fsSL {{ item.key }} | sudo gpg --dearmor -o /usr/share/keyrings/{{ item.dest_key }}"
+    loop: "{{ repos }}"
   - name: "configure repos"
     apt_repository:
       repo: "{{ item.repo }}"
