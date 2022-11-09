@@ -44,21 +44,25 @@
       key: "https://dl.google.com/linux/linux_signing_key.pub"
       file: "/tmp/linux_signing_key.pub"
       dest_key: "/usr/share/keyrings/google-chrome.gpg"
+      repo_file: "google-chrome"
     - ydisk_repo:
       repo: "deb [signed-by=/usr/share/keyrings/yadisk.gpg] http://repo.yandex.ru/yandex-disk/deb/ stable main"
       key: "http://repo.yandex.ru/yandex-disk/YANDEX-DISK-KEY.GPG"
       file: "/tmp/YANDEX-DISK-KEY.GPG"
       dest_key: "/usr/share/keyrings/yadisk.gpg"
+      repo_file: "yadisk"
     - vscode_repo:
       repo: "deb [arch=amd64,arm64,armhf signed-by=/usr/share/keyrings/vscode.gpg] https://packages.microsoft.com/repos/code stable main"
       key: "https://packages.microsoft.com/keys/microsoft.asc"
       file: "/tmp/microsoft1.asc"
-      dest_key: "/usr/share/keyrings/vscode.gpg"    
+      dest_key: "/usr/share/keyrings/vscode.gpg"
+      repo_file: "vscode"   
     - powershell_repo:
       repo: "deb [arch=amd64,armhf,arm64 signed-by=/usr/share/keyrings/powershell.gpg] https://packages.microsoft.com/ubuntu/22.04/prod/ jammy main"
       key: "https://packages.microsoft.com/keys/microsoft.asc"
       file: "/tmp/microsoft2.asc"
-      dest_key: "/usr/share/keyrings/powershell.gpg"    
+      dest_key: "/usr/share/keyrings/powershell.gpg"
+      repo_file: "powershell"    
   tasks:
   - name: "install main packages"
     apt:
@@ -90,6 +94,7 @@
       repo: "{{ item.repo }}"
       state: present
       update_cache: yes
+      file: "{{ item.repo_file }}"
     loop: "{{ repos }}"
 #  - name: "install additional packages"
 #    apt:
