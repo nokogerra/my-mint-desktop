@@ -1,7 +1,7 @@
 - name: "configure desktop"
   hosts: localhost
   vars:
-    local_user: "agkopyl1"
+    local_user: "userx"
     vnc_password: "password"
     main_packages:
     - ssh
@@ -42,7 +42,16 @@
       port: "3389"
     - ssh:
       proto: "tcp"
-      port: "22"         
+      port: "22"
+    - vnc1:
+      proto: "tcp"
+      port: "5900"
+    - vcn2:
+      proto: "tcp"
+      port: "5901"
+    - vcn3:
+      proto: "tcp"
+      port: "5902"         
   tasks:
   - name: "install main packages"
     apt:
@@ -58,6 +67,7 @@
     loop: "{{ configs }}"
   - name: "network access"
     community.general.ufw:
+      state: enabled
       rule: allow
       port: "{{ item.port }}"
       proto: "{{ item.proto }}"
