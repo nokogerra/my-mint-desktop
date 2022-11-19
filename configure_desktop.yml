@@ -71,11 +71,16 @@
       rule: allow
       port: "{{ item.port }}"
       proto: "{{ item.proto }}"
-    loop: "{{ net_ports }}"
-  - name: "set vnc password"
-    become: false
-    shell: printf "{{ vnc_password }}\{{ vnc_password }}\n\n" | vncpasswd
+    loop: "{{ net_ports }}"  
   - block:
+    - name: "set vnc password"
+      become: false
+      shell: printf "{{ vnc_password }}\{{ vnc_password }}\n\n" | vncpasswd
+    - name: "vnc folder"
+      become: false
+      file:
+        path: "/home/{{ local_user }}/.vnc"
+        state: directory
     - name: "configure vnc unit"
       template:
         src: "templates/tigervnc-unit.2"
