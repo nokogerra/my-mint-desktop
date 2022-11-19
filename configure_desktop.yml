@@ -2,6 +2,7 @@
   hosts: localhost
   vars:
     local_user: "agkopyl1"
+    vnc_password: "password"
     main_packages:
     - ssh
     - vim
@@ -63,7 +64,7 @@
     loop: "{{ net_ports }}"
   - name: "set vnc password"
     become: false
-    shell: printf "password\npassword\n\n" | vncpasswd
+    shell: printf "{{ vnc_password }}\{{ vnc_password }}\n\n" | vncpasswd
   - block:
     - name: "configure vnc unit"
       template:
