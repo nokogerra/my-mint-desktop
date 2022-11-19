@@ -1,9 +1,13 @@
 - name: "configure desktop"
   hosts: localhost
   vars:
+    local_user: "agkopyl1"
     main_packages:
     - ssh
-    - xrdp
+    - vim
+    - tigervnc-standalone-server 
+    - tigervnc-viewer
+    - tigervnc-xorg-extension
     - tmux
     - vlc
     - pinta
@@ -32,6 +36,9 @@
     - vim_conf:
       src: "templates/vimrc.j2"
       dest: ~/.vimrc
+    - vnc_xstartup:
+      src: "templates/tigervnc-xstartup.j2"
+      dest: "~/.vnc/xstartup"
     net_ports:
     - rdp:
       proto: "tcp"
@@ -109,6 +116,18 @@
       port: "{{ item.port }}"
       proto: "{{ item.proto }}"
     loop: "{{ net_ports }}"
+  - block:
+    - name: "configure vnc unit"
+      template:
+        src: "templates/tigervnc-unit.2"
+        dest: "/etc/systemd/system/vncserver@.service"
+    - name: "systemctl reload"
+      shell: systemctl daemon-reload
+    - name: "enable and start vnc"
+      service:
+        name: "vncserver@1.service"
+        enabled: true
+        state: started
 
 
 
