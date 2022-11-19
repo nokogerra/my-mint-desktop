@@ -80,9 +80,7 @@
   - block:
     - name: "set vnc password"
       become: false
-      shell: |
-        echo {{ vnc_password }} >/tmp/file
-        vncpasswd </tmp/file >/tmp/vncpasswd.1 2>/tmp/vncpasswd.2
+      shell: vncpasswd -f <<< {{ vnc_password }} > "/home/{{ local_user }}/.vnc/passwd"
     - name: "configure vnc unit"
       template:
         src: "templates/tigervnc-unit.2"
