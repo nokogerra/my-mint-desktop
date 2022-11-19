@@ -59,6 +59,11 @@
       update_cache: yes
       state: present
     loop: "{{ main_packages }}"
+  - name: "vnc folder"
+    become: false
+    file:
+      path: "/home/{{ local_user }}/.vnc"
+      state: directory
   - name: "set up configs"
     become: no
     template:
@@ -76,11 +81,6 @@
     - name: "set vnc password"
       become: false
       shell: printf "{{ vnc_password }}\{{ vnc_password }}\n\n" | vncpasswd
-    - name: "vnc folder"
-      become: false
-      file:
-        path: "/home/{{ local_user }}/.vnc"
-        state: directory
     - name: "configure vnc unit"
       template:
         src: "templates/tigervnc-unit.2"
